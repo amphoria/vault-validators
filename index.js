@@ -6,6 +6,8 @@ const sdk = new StakeWiseSDK({ network: Network.Mainnet })
 const inputEl = document.getElementById("input-el")
 const updateBtn = document.getElementById("update-btn")
 const saveBtn = document.getElementById("save-btn")
+const prevBtn = document.getElementById("prev-btn")
+const nextBtn = document.getElementById("next-btn")
 const containerEl = document.getElementById("container")
 
 // Contract addresses and ABIs
@@ -20,8 +22,23 @@ if (cookie != "") {
 
 updateBtn.addEventListener("click", getValidators)
 saveBtn.addEventListener("click", saveAddress)
+prevBtn.addEventListener("click", () => {
+    start -= limit
+    start === 0 ? prevBtn.disabled = true : prevBtn.disabled = false
+    getValidators()
+})
+nextBtn.addEventListener("click", () => {
+    start += limit
+    start === 0 ? prevBtn.disabled = true : prevBtn.disabled = false
+    getValidators()
+})
+
+// Validator list variables
+const limit = 35
+let start = 0
 
 async function getValidators() {
+
     const options = {
         year: 'numeric',
         month: 'short',
@@ -40,8 +57,8 @@ async function getValidators() {
 
     const output = await sdk.vault.getValidators({
         vaultAddress: inputEl.value,
-        limit: 200,
-        skip: 0
+        limit: limit,
+        skip: start
     })
 
     output.forEach((item) => {
@@ -57,6 +74,14 @@ async function getValidators() {
     })
 
     containerEl.innerHTML = html
+
+    if (output.length < limit) {
+        nextBtn.disabled = true
+        prevBtn.disabled = false
+    } else {
+        nextBtn.disabled = false
+    }
+    
 }
 
 function saveAddress() {
