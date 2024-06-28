@@ -40,7 +40,7 @@ async function getValidators() {
 
     const output = await sdk.vault.getValidators({
         vaultAddress: inputEl.value,
-        limit: 100,
+        limit: 200,
         skip: 0
     })
 
